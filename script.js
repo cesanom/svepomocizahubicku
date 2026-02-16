@@ -1,15 +1,11 @@
-// =============================
 // Mobile Menu Toggle
-// =============================
 const mobileMenuBtn = document.getElementById('mobile-menu-btn');
 const mobileMenu = document.getElementById('mobile-menu');
 const navbar = document.getElementById('navbar');
 
-if (mobileMenuBtn) {
-    mobileMenuBtn.addEventListener('click', () => {
-        mobileMenu.classList.toggle('hidden');
-    });
-}
+mobileMenuBtn.addEventListener('click', () => {
+    mobileMenu.classList.toggle('hidden');
+});
 
 // Close mobile menu when clicking on a link
 document.querySelectorAll('#mobile-menu a').forEach(link => {
@@ -18,22 +14,16 @@ document.querySelectorAll('#mobile-menu a').forEach(link => {
     });
 });
 
-// =============================
 // Navbar Background on Scroll
-// =============================
 window.addEventListener('scroll', () => {
-    if (navbar) {
-        if (window.scrollY > 50) {
-            navbar.classList.add('shadow-md');
-        } else {
-            navbar.classList.remove('shadow-md');
-        }
+    if (window.scrollY > 50) {
+        navbar.classList.add('shadow-md');
+    } else {
+        navbar.classList.remove('shadow-md');
     }
 });
 
-// =============================
-// Scroll Reveal Animations
-// =============================
+// Intersection Observer for Scroll Animations
 const observerOptions = {
     root: null,
     rootMargin: '0px',
@@ -44,69 +34,78 @@ const observer = new IntersectionObserver((entries, observer) => {
     entries.forEach(entry => {
         if (entry.isIntersecting) {
             entry.target.classList.add('revealed');
-            observer.unobserve(entry.target);
+            observer.unobserve(entry.target); // Only animate once
         }
     });
 }, observerOptions);
 
+// Observe all elements with scroll-reveal class
 document.querySelectorAll('.scroll-reveal').forEach((el) => {
     observer.observe(el);
 });
 
-// =============================
-// CONTACT FORM → Cloudflare Function
-// =============================
-const contactForm = document.getElementById('contact-form');
+// Form Validation & Google Forms Integration Note
+const contactForm = document.getElementById('contactForm');
 
-if (contactForm) {
-    contactForm.addEventListener('submit', async (e) => {
+contactForm.addEventListener('submit', (e) => {
+    // Basic validation is handled by HTML5 required attributes
+    // This is just for any additional JS validation if needed
+    
+    // Show loading state
+    const submitBtn = contactForm.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i> Odesílání...';
+    submitBtn.disabled = true;
+    
+    // Note: In production, replace entry.XXXXXX with actual Google Form entry IDs
+    // To get these IDs:
+    // 1. Create Google Form with same fields
+    // 2. Click "Preview" (eye icon)
+    // 3. Right-click > Inspect > Network tab
+    // 4. Submit test response
+    // 5. Look for "formResponse" in Network tab
+    // 6. Check Payload for entry numbers
+    
+    // For demo purposes, we'll simulate a delay and then let the form submit normally
+    setTimeout(() => {
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+        lucide.createIcons(); // Re-render icons after changing innerHTML
+    }, 1000);
+});
+
+// Smooth Scroll for Anchor Links (fallback for older browsers)
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
         e.preventDefault();
-
-        const submitBtn = contactForm.querySelector('button[type="submit"]');
-        const status = document.getElementById('form-status');
-        const originalText = submitBtn.innerHTML;
-
-        submitBtn.innerHTML =
-            '<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i> Odesílání...';
-        submitBtn.disabled = true;
-        if (status) status.textContent = "";
-
-        const formData = new FormData(contactForm);
-
-        const data = {
-            name: formData.get("name"),
-            email: formData.get("email"),
-            phone: formData.get("phone"),
-            location: formData.get("location"),
-            phase: formData.get("phase"),
-            message: formData.get("message")
-        };
-
-        try {
-            const response = await fetch("/submit", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(data)
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+            target.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
             });
+        }
+    });
+});
 
-            if (!response.ok) {
-                throw new Error("Server error");
+// Lazy Loading Images (if not supported natively)
+if ('IntersectionObserver' in window) {
+    const imageObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const img = entry.target;
+                img.src = img.dataset.src || img.src;
+                observer.unobserve(img);
             }
+        });
+    });
 
-            if (status) {
-                status.textContent = "✅ Děkujeme! Ozveme se vám do 24 hodin.";
-                status.className = "text-green-600 text-center text-sm mt-4";
-            }
+    // Observe all images
+    document.querySelectorAll('img').forEach(img => {
+        imageObserver.observe(img);
+    });
+}
 
-            contactForm.reset();
-
-        } catch (error) {
-            if (status) {
-                status.textContent = "❌ Došlo k chybě. Zkuste to prosím znovu.";
-                status.className = "text-red-600 text-center text-sm mt-4";
-            }
-        } finally {
-            submitBtn.innerHTML = originalText;
-            submitBtn.disabl
+// Console greeting
+console.log('%cSvépomocí za hubičku 🏠', 'color: #0c4a6e; font-size: 20px; font-weight: bold;');
+console.log('Děkujeme za zájem o náš projekt!');
