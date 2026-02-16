@@ -1,0 +1,7 @@
+{
+  "name": "tsv21-sv",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "echo \"build complete\""
+  }
+}
