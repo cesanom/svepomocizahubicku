@@ -1,9 +1,9 @@
-name = "svepomoci-form-worker"
+name = "svepomocizahubicku.cesanom.workers.dev"
 main = "cloudflare-worker.js"
 compatibility_date = "2024-01-01"
 
 # D1 Database binding
 [[d1_databases]]
 binding = "DB"  # název v kódu (env.DB)
-database_name = "svepomoci-contacts"
-database_id = "your-database-id-here"  # ID z Cloudflare dashboardu po vytvoření DB
+database_name = "svepomocizahubicku-db"
+database_id = "405f9bab-fac5-4aa6-bbff-ddc72cf38444"  # ID z Cloudflare dashboardu po vytvoření DB
