@@ -44,35 +44,86 @@ document.querySelectorAll('.scroll-reveal').forEach((el) => {
     observer.observe(el);
 });
 
-// Form Validation & Google Forms Integration Note
+// Form Validation & Cloudflare Database Integration
 const contactForm = document.getElementById('contactForm');
+const submitBtn = document.getElementById('submitBtn');
+const btnText = document.getElementById('btnText');
+const btnIcon = document.getElementById('btnIcon');
+const formStatus = document.getElementById('formStatus');
+const statusMessage = document.getElementById('statusMessage');
 
-contactForm.addEventListener('submit', (e) => {
-    // Basic validation is handled by HTML5 required attributes
-    // This is just for any additional JS validation if needed
+// Cloudflare Worker API URL - změňte na vaši URL po deployi
+const API_URL = 'https://vas-worker.vase-jmeno.workers.dev/submit-form';
+
+contactForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
     
     // Show loading state
-    const submitBtn = contactForm.querySelector('button[type="submit"]');
-    const originalText = submitBtn.innerHTML;
-    submitBtn.innerHTML = '<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i> Odesílání...';
     submitBtn.disabled = true;
+    btnText.textContent = 'Odesílání...';
+    btnIcon.setAttribute('data-lucide', 'loader-2');
+    btnIcon.classList.add('animate-spin');
+    lucide.createIcons();
     
-    // Note: In production, replace entry.XXXXXX with actual Google Form entry IDs
-    // To get these IDs:
-    // 1. Create Google Form with same fields
-    // 2. Click "Preview" (eye icon)
-    // 3. Right-click > Inspect > Network tab
-    // 4. Submit test response
-    // 5. Look for "formResponse" in Network tab
-    // 6. Check Payload for entry numbers
+    // Collect form data
+    const formData = {
+        name: document.getElementById('name').value,
+        email: document.getElementById('email').value,
+        phone: document.getElementById('phone').value || '',
+        location: document.getElementById('location').value,
+        phase: document.getElementById('phase').value,
+        message: document.getElementById('message').value || '',
+        consent: document.getElementById('consent').checked,
+        timestamp: new Date().toISOString()
+    };
     
-    // For demo purposes, we'll simulate a delay and then let the form submit normally
-    setTimeout(() => {
-        submitBtn.innerHTML = originalText;
+    try {
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData)
+        });
+        
+        const result = await response.json();
+        
+        if (response.ok) {
+            // Success
+            showStatus('success', 'Děkujeme! Vaše zpráva byla úspěšně odeslána. Ozveme se vám do 48 hodin.');
+            contactForm.reset();
+        } else {
+            // Error from server
+            throw new Error(result.message || 'Chyba při odesílání');
+        }
+    } catch (error) {
+        console.error('Form submission error:', error);
+        showStatus('error', 'Omlouváme se, došlo k chybě při odesílání. Zkuste to prosím znovu nebo nás kontaktujte přímo na emailu.');
+    } finally {
+        // Reset button state
         submitBtn.disabled = false;
-        lucide.createIcons(); // Re-render icons after changing innerHTML
-    }, 1000);
+        btnText.textContent = 'Odeslat poptávku';
+        btnIcon.setAttribute('data-lucide', 'send');
+        btnIcon.classList.remove('animate-spin');
+        lucide.createIcons();
+    }
 });
+
+function showStatus(type, message) {
+    formStatus.classList.remove('hidden', 'bg-green-50', 'border-green-200', 'text-green-800', 'bg-red-50', 'border-red-200', 'text-red-800');
+    
+    if (type === 'success') {
+        formStatus.classList.add('bg-green-50', 'border', 'border-green-200', 'text-green-800');
+    } else {
+        formStatus.classList.add('bg-red-50', 'border', 'border-red-200', 'text-red-800');
+    }
+    
+    statusMessage.textContent = message;
+    formStatus.classList.remove('hidden');
+    
+    // Scroll to status message
+    formStatus.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
 
 // Smooth Scroll for Anchor Links (fallback for older browsers)
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
