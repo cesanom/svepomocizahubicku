@@ -3,11 +3,10 @@
   "compatibility_date": "2026-02-16",
   "assets": {
     "directory": "."
-
+},
 "d1_databases": [{
     "binding": "DB",
     "database_name": "svepomocizahubicku-db",
     "database_id": "405f9bab-fac5-4aa6-bbff-ddc72cf38444"
  }]
-  }
  }
