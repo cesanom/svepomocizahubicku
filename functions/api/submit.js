@@ -1,21 +1,26 @@
 export async function onRequestPost(context) {
-  const { request, env } = context;
-  const data = await request.json();
+  try {
+    const data = await context.request.formData();
+    const name = data.get('name');
+    const email = data.get('email');
+    const phone = data.get('phone');
+    const location = data.get('location');
+    const phase = data.get('phase');
+    const message = data.get('message');
 
-  const { name, email, phone, message } = data;
+    // ZDE MŮŽEŠ PŘIDAT ODESÍLÁNÍ (např. přes Email API nebo Webhook)
+    // Pro začátek jen vypíšeme do konzole Cloudflare a přesměrujeme uživatele
+    
+    console.log(`Nový kontakt: ${name} (${email}) - ${location}`);
 
-  if (!name || !email) {
-    return new Response("Missing required fields", { status: 400 });
+    // Přesměrování na děkovací stránku (vytvoř si např. thanks.html)
+    // Nebo se vrať zpět na hlavní stránku s parametrem success
+    return new Response(null, {
+      status: 302,
+      headers: { 'Location': '/?success=true#kontakt' },
+    });
+
+  } catch (err) {
+    return new Response('Chyba při odesílání: ' + err.message, { status: 500 });
   }
-
-  await env.DB.prepare(
-    `INSERT INTO contacts (name, email, phone, message)
-     VALUES (?, ?, ?, ?)`
-  )
-    .bind(name, email, phone, message)
-    .run();
-
-  return new Response(JSON.stringify({ success: true }), {
-    headers: { "Content-Type": "application/json" },
-  });
 }
