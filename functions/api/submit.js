@@ -1,26 +1,35 @@
 export async function onRequestPost(context) {
   try {
     const data = await context.request.formData();
-    const name = data.get('name');
-    const email = data.get('email');
-    const phone = data.get('phone');
-    const location = data.get('location');
-    const phase = data.get('phase');
-    const message = data.get('message');
-
-    // ZDE MŮŽEŠ PŘIDAT ODESÍLÁNÍ (např. přes Email API nebo Webhook)
-    // Pro začátek jen vypíšeme do konzole Cloudflare a přesměrujeme uživatele
     
-    console.log(`Nový kontakt: ${name} (${email}) - ${location}`);
+    // Extrakce dat z formuláře (musí odpovídat atributům "name" v index.html)
+    const formData = {
+      name: data.get('name'),
+      email: data.get('email'),
+      phone: data.get('phone'),
+      location: data.get('location'),
+      phase: data.get('phase'),
+      message: data.get('message'),
+    };
 
-    // Přesměrování na děkovací stránku (vytvoř si např. thanks.html)
-    // Nebo se vrať zpět na hlavní stránku s parametrem success
+    // Zde se v budoucnu napojí odesílání na email.
+    // Pro teď data uvidíš v logu v Cloudflare Dashboardu.
+    console.log("Přijatá data:", formData);
+
+    // Přesměrování zpět na web po úspěšném odeslání
+    // Přidáme parametr ?success=1, abys mohl uživateli zobrazit poděkování
     return new Response(null, {
       status: 302,
-      headers: { 'Location': '/?success=true#kontakt' },
+      headers: { 
+        'Location': '/#kontakt?success=1',
+        'Cache-Control': 'no-cache'
+      },
     });
 
   } catch (err) {
-    return new Response('Chyba při odesílání: ' + err.message, { status: 500 });
+    return new Response(JSON.stringify({ error: err.message }), { 
+      status: 500,
+      headers: { 'Content-Type': 'application/json' }
+    });
   }
 }
