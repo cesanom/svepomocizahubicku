@@ -2,32 +2,19 @@ export async function onRequestPost(context) {
   try {
     const data = await context.request.formData();
     
-    // Extrakce dat z formuláře (musí odpovídat atributům "name" v index.html)
-    const formData = {
-      name: data.get('name'),
-      email: data.get('email'),
-      phone: data.get('phone'),
-      location: data.get('location'),
-      phase: data.get('phase'),
-      message: data.get('message'),
-    };
+    // Posbíráme data pro kontrolu (uvidíš je v logách Cloudflare)
+    const payload = Object.fromEntries(data.entries());
+    console.log("Přijatá data:", payload);
 
-    // Zde se v budoucnu napojí odesílání na email.
-    // Pro teď data uvidíš v logu v Cloudflare Dashboardu.
-    console.log("Přijatá data:", formData);
-
-    // Přesměrování zpět na web po úspěšném odeslání
-    // Přidáme parametr ?success=1, abys mohl uživateli zobrazit poděkování
-    return new Response(null, {
-      status: 302,
-      headers: { 
-        'Location': '/#kontakt?success=1',
-        'Cache-Control': 'no-cache'
-      },
+    // Tady můžete v budoucnu přidat odesílání na email
+    
+    return new Response(JSON.stringify({ success: true }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' }
     });
 
   } catch (err) {
-    return new Response(JSON.stringify({ error: err.message }), { 
+    return new Response(JSON.stringify({ success: false, error: err.message }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' }
     });
