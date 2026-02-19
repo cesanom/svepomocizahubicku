@@ -52,8 +52,15 @@ const btnIcon = document.getElementById('btnIcon');
 const formStatus = document.getElementById('formStatus');
 const statusMessage = document.getElementById('statusMessage');
 
-// Cloudflare Worker API URL - změňte na vaši URL po deployi
+// Cloudflare Worker API URL - NUTNO ZMĚNIT!
+// Po nasazení workeru vložte sem jeho skutečnou URL
+// Například: 'https://svepomoci-form-worker.vase-jmeno.workers.dev/submit-form'
 const API_URL = 'https://vas-worker.vase-jmeno.workers.dev/submit-form';
+
+// Kontrola, zda je API_URL nastaveno správně
+if (API_URL.includes('vas-worker.vase-jmeno')) {
+    console.error('⚠️ UPOZORNĚNÍ: Nezměnili jste API_URL v script.js! Formulář nebude fungovat.');
+}
 
 contactForm.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -98,7 +105,19 @@ contactForm.addEventListener('submit', async (e) => {
         }
     } catch (error) {
         console.error('Form submission error:', error);
-        showStatus('error', 'Omlouváme se, došlo k chybě při odesílání. Zkuste to prosím znovu nebo nás kontaktujte přímo na emailu.');
+        
+        // Detailnější chybová hláška pro debugging
+        let errorMsg = 'Omlouváme se, došlo k chybě při odesílání. ';
+        
+        if (API_URL.includes('vas-worker.vase-jmeno')) {
+            errorMsg += '⚠️ API není nakonfigurováno - kontaktujte správce webu.';
+        } else if (error.message && error.message.includes('Failed to fetch')) {
+            errorMsg += 'Server je nedostupný. Zkuste to prosím znovu později.';
+        } else {
+            errorMsg += 'Zkuste to prosím znovu nebo nás kontaktujte přímo na info@svepomocizahubicku.cz';
+        }
+        
+        showStatus('error', errorMsg);
     } finally {
         // Reset button state
         submitBtn.disabled = false;
