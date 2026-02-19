@@ -62,7 +62,10 @@ if (API_URL.includes('svepomocizahubicku.cesanom')) {
     console.error('⚠️ UPOZORNĚNÍ: Nezměnili jste API_URL v script.js! Formulář nebude fungovat.');
 }
 
-contactForm.addEventListener('submit', async (e) => {
+//contactForm.addEventListener('submit', async (e) => {
+  //  e.preventDefault();
+contactForm.addEventListener('submit', function(e) {
+    const formData = new FormData(contactForm);
     e.preventDefault();
     
     // Show loading state
