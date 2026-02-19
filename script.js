@@ -58,7 +58,7 @@ const statusMessage = document.getElementById('statusMessage');
 const API_URL = 'https://svepomocizahubicku-api.cesanom.workers.dev'; 
 
 // Kontrola, zda je API_URL nastaveno správně
-if (API_URL.includes('svepomocizahubicku.cesanom')) {
+if (API_URL.includes('svepomocizahubicku-api.cesanom')) {
     console.error('⚠️ UPOZORNĚNÍ: Nezměnili jste API_URL v script.js! Formulář nebude fungovat.');
 }
 
@@ -109,7 +109,7 @@ contactForm.addEventListener('submit', async (e) => {
         // Detailnější chybová hláška pro debugging
         let errorMsg = 'Omlouváme se, došlo k chybě při odesílání. ';
         
-        if (API_URL.includes('svepomocizahubicku.cesanom')) {
+        if (API_URL.includes('svepomocizahubicku-api.cesanom')) {
             errorMsg += '⚠️ API není nakonfigurováno - kontaktujte správce webu.';
         } else if (error.message && error.message.includes('Failed to fetch')) {
             errorMsg += 'Server je nedostupný. Zkuste to prosím znovu později.';
