@@ -5,9 +5,10 @@
     "directory": "."
 },
 "d1_databases": [{
-    "binding": "DB",
+    //"binding": "DB",
     //"database_name": "svepomocizahubicku-db",
     //"database_id": "405f9bab-fac5-4aa6-bbff-ddc72cf38444"
+    "binding": "db-tutorial",
     "database_name": "prod-d1-tutorial",
     "database_id": "38142012-09f6-4da4-8544-9ffc18424a83"
  }]
