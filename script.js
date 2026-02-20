@@ -55,10 +55,10 @@ const statusMessage = document.getElementById('statusMessage');
 // Cloudflare Worker API URL - NUTNO ZMĚNIT!
 // Po nasazení workeru vložte sem jeho skutečnou URL
 // Například: 'https://svepomoci-form-worker.vase-jmeno.workers.dev/submit-form'
-const API_URL = 'https://svepomocizahubicku-api.cesanom.workers.dev/submit-form'; 
+const API_URL = 'https://svepomocizahubicku.cesanom.workers.dev/submit-form'; 
 
 // Kontrola, zda je API_URL nastaveno správně
-if (API_URL.includes('svepomocizahubicku-api.cesanom')) {
+if (API_URL.includes('svepomocizahubicku.cesanom')) {
     console.error('⚠️ UPOZORNĚNÍ: Nezměnili jste API_URL v script.js! Formulář nebude fungovat.');
 }
 
@@ -110,7 +110,7 @@ contactForm.addEventListener('submit', async (e) => {
         // Detailnější chybová hláška pro debugging
         let errorMsg = 'Omlouváme se, došlo k chybě při odesílání. ';
         
-        if (API_URL.includes('svepomocizahubicku-api.cesanom')) {
+        if (API_URL.includes('svepomocizahubicku.cesanom')) {
             errorMsg += '⚠️ API není nakonfigurováno - kontaktujte správce webu.';
         } else if (error.message && error.message.includes('Failed to fetch')) {
             errorMsg += 'Server je nedostupný. Zkuste to prosím znovu později.';
