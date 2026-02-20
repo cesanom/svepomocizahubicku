@@ -1,13 +1,13 @@
-//name = "svepomocizahubicku.cesanom.workers.dev"
+#name = "svepomocizahubicku.cesanom.workers.dev"
 name = "d1-tutorial.cesanom.workers.dev"
 main = "cloudflare-worker.js"
 compatibility_date = "2024-01-01"
 
 # D1 Database binding
 [[d1_databases]]
-//binding = "DB"  # název v kódu (env.DB)
-//database_name = "svepomocizahubicku-db"
-//database_id = "405f9bab-fac5-4aa6-bbff-ddc72cf38444"  # ID z Cloudflare dashboardu po vytvoření DB
+#binding = "DB"  # název v kódu (env.DB)
+#database_name = "svepomocizahubicku-db"
+#database_id = "405f9bab-fac5-4aa6-bbff-ddc72cf38444"  # ID z Cloudflare dashboardu po vytvoření DB
 binding = "db-tutorial"  # název v kódu (env.DB)
 database_name = "prod-d1-tutorial"
 database_id = "38142012-09f6-4da4-8544-9ffc18424a83"  # ID z Cloudflare dashboardu po vytvoření DB
