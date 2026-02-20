@@ -1,5 +1,5 @@
 {
-  "name": "d1-tutorial",
+  "name": "test",
   "compatibility_date": "2026-02-16",
   "assets": {
     "directory": "."
@@ -10,6 +10,6 @@
     //"database_id": "405f9bab-fac5-4aa6-bbff-ddc72cf38444"
     "binding": "DB",
     "database_name": "prod-d1-tutorial",
-    "database_id": "38142012-09f6-4da4-8544-9ffc18424a83"
+    "database_id": "4f63c9fa-72cd-4311-9428-c584f354ae9c"
  }]
  }
