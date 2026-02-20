@@ -55,7 +55,7 @@ const statusMessage = document.getElementById('statusMessage');
 // Cloudflare Worker API URL - NUTNO ZMĚNIT!
 // Po nasazení workeru vložte sem jeho skutečnou URL
 // Například: 'https://svepomoci-form-worker.vase-jmeno.workers.dev/submit-form'
-const API_URL = 'https://svepomocizahubicku.cesanom.workers.dev/submit-form'; 
+const API_URL = 'https://svepomocizahubicku.cesanom.workers.dev'; 
 //const API_URL = 'https://d1-tutorial.cesanom.workers.dev'; 
 
 // Kontrola, zda je API_URL nastaveno správně
