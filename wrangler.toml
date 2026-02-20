@@ -1,5 +1,5 @@
 #name = "svepomocizahubicku.cesanom.workers.dev"
-name = "d1-tutorial.cesanom.workers.dev"
+name = "test.cesanom.workers.dev"
 main = "cloudflare-worker.js"
 compatibility_date = "2024-01-01"
 
