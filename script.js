@@ -113,7 +113,7 @@ contactForm.addEventListener('submit', async (e) => {
         let errorMsg = 'Omlouváme se, došlo k chybě při odesílání. ';
         
         //if (API_URL.includes('svepomocizahubicku.cesanom')) {
-        if (API_URL.includes('tvujworker.jmeno')) {    
+        if (API_URL.includes('d1-tutorial.cesanom')) {    
             errorMsg += '⚠️ API není nakonfigurováno - kontaktujte správce webu.';
         } else if (error.message && error.message.includes('Failed to fetch')) {
             errorMsg += 'Server je nedostupný. Zkuste to prosím znovu později.';
