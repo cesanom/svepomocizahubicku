@@ -3,12 +3,34 @@
 
 export default {
   async fetch(request, env, ctx) {
-    // CORS headers pro povolení požadavků z vaší domény
+    // Získání původu (origin) požadavku pro CORS
+    const origin = request.headers.get('Origin') || '*';
+    const allowedOrigins = [
+      'https://svepomocizahubicku.cz',
+      'https://www.svepomocizahubicku.cz',
+      'http://localhost:8080',
+      'http://localhost:3000',
+      'null' // Pro file:// protokol při lokálním testování
+    ];
+    
+    // CORS headers - povolíme konkrétní domény nebo * pro testování
     const corsHeaders = {
-      'Access-Control-Allow-Origin': '*', // V produkci změňte na konkrétní doménu
+      'Access-Control-Allow-Origin': allowedOrigins.includes(origin) ? origin : '*',
       'Access-Control-Allow-Methods': 'POST, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type',
     };
+
+    // Kontrola URL cesty - očekáváme /submit-form
+    const url = new URL(request.url);
+    if (url.pathname !== '/submit-form' && url.pathname !== '/') {
+      return new Response(JSON.stringify({ error: 'Not found' }), {
+        status: 404,
+        headers: {
+          'Content-Type': 'application/json',
+          ...corsHeaders
+        }
+      });
+    }
 
     // Handle preflight OPTIONS request
     if (request.method === 'OPTIONS') {
