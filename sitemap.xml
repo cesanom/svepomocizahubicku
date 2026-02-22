@@ -1,33 +1,9 @@
-xml version=1.0 encoding=UTF-8
-urlset xmlns=httpwww.sitemaps.orgschemassitemap0.9
-  url
-    lochttpssvepomocizahubicku.czloc
-    lastmod2024-01-20lastmod
-    changefreqweeklychangefreq
-    priority1.0priority
-  url
-  url
-    lochttpssvepomocizahubicku.cz#jak-to-fungujeloc
-    lastmod2024-01-20lastmod
-    changefreqweeklychangefreq
-    priority0.8priority
-  url
-  url
-    lochttpssvepomocizahubicku.cz#sluzbyloc
-    lastmod2024-01-20lastmod
-    changefreqweeklychangefreq
-    priority0.8priority
-  url
-  url
-    lochttpssvepomocizahubicku.cz#pribehloc
-    lastmod2024-01-20lastmod
-    changefreqweeklychangefreq
-    priority0.8priority
-  url
-  url
-    lochttpssvepomocizahubicku.cz#kontaktloc
-    lastmod2024-01-20lastmod
-    changefreqweeklychangefreq
-    priority0.9priority
-  url
-urlset
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <url>
+    <loc>https://svepomocizahubicku.cz/</loc>
+    <lastmod>2025-01-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+</urlset>
