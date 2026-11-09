@@ -83,6 +83,26 @@ export default {
         });
       }
 
+      // Validace telefonu (nepovinný) – český formát +420 XXX XXX XXX
+      if (data.phone) {
+        let digits = String(data.phone).replace(/\D/g, '');
+        if (digits.startsWith('00420')) digits = digits.slice(5);
+        else if (digits.length === 12 && digits.startsWith('420')) digits = digits.slice(3);
+        if (!/^\d{9}$/.test(digits)) {
+          return new Response(JSON.stringify({
+            error: 'Invalid phone',
+            message: 'Zadejte platné české telefonní číslo (9 číslic)'
+          }), {
+            status: 400,
+            headers: {
+              'Content-Type': 'application/json',
+              ...corsHeaders
+            }
+          });
+        }
+        data.phone = '+420 ' + digits.replace(/(\d{3})(\d{3})(\d{3})/, '$1 $2 $3');
+      }
+
       // Uložení do D1 databáze
       // Předpokládá tabulku: CREATE TABLE contacts (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, email TEXT, phone TEXT, location TEXT, phase TEXT, message TEXT, consent INTEGER, created_at TEXT)
       const { results } = await env.DB.prepare(
