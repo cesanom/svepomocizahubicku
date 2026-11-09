@@ -64,6 +64,28 @@ if (API_URL.includes('test.cesanom')) {
     console.error('⚠️ UPOZORNĚNÍ: Nezměnili jste API_URL v script.js! Formulář nebude fungovat.');
 }
 
+// Telefon – český formát: +420 XXX XXX XXX
+// Uživatel píše jen 9 číslic, předvolba +420 je pevně před polem.
+const phoneInput = document.getElementById('phone');
+
+function formatCzPhone(value) {
+    let digits = value.replace(/\D/g, '');
+    // Při vložení celého čísla odstraníme předvolbu (+420 / 00420 / 420)
+    if (digits.startsWith('00420')) digits = digits.slice(5);
+    else if (digits.length > 9 && digits.startsWith('420')) digits = digits.slice(3);
+    digits = digits.slice(0, 9);
+    return digits.replace(/(\d{3})(?=\d)/g, '$1 ');
+}
+
+phoneInput.addEventListener('input', () => {
+    phoneInput.value = formatCzPhone(phoneInput.value);
+    phoneInput.setCustomValidity('');
+});
+
+phoneInput.addEventListener('invalid', () => {
+    phoneInput.setCustomValidity('Zadejte 9místné české telefonní číslo, např. 777 888 999');
+});
+
 contactForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     
@@ -78,7 +100,7 @@ contactForm.addEventListener('submit', async (e) => {
     const formData = {
         name: document.getElementById('name').value,
         email: document.getElementById('email').value,
-        phone: document.getElementById('phone').value || '',
+        phone: phoneInput.value ? '+420 ' + formatCzPhone(phoneInput.value) : '',
         location: document.getElementById('location').value,
         phase: document.getElementById('phase').value,
         message: document.getElementById('message').value || '',
