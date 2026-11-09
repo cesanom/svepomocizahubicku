@@ -155,6 +155,20 @@ export default {
         });
       }
 
+      // Souhlas se zpracováním osobních údajů je povinný
+      if (data.consent !== true) {
+        return new Response(JSON.stringify({
+          error: 'Missing consent',
+          message: 'Pro odeslání je nutné souhlasit se zpracováním osobních údajů.'
+        }), {
+          status: 400,
+          headers: {
+            'Content-Type': 'application/json',
+            ...corsHeaders
+          }
+        });
+      }
+
       // Validace telefonu (nepovinný) – český formát +420 XXX XXX XXX
       if (data.phone) {
         let digits = String(data.phone).replace(/\D/g, '');

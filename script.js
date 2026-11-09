@@ -58,11 +58,6 @@ const statusMessage = document.getElementById('statusMessage');
 //const API_URL = 'https://svepomocizahubicku.cesanom.workers.dev'; 
 const API_URL = 'https://test.cesanom.workers.dev/submit-form'; 
 
-// Kontrola, zda je API_URL nastaveno správně
-//if (API_URL.includes('svepomocizahubicku.cesanom')) {
-if (API_URL.includes('test.cesanom')) {    
-    console.error('⚠️ UPOZORNĚNÍ: Nezměnili jste API_URL v script.js! Formulář nebude fungovat.');
-}
 
 // Telefon – český formát: +420 XXX XXX XXX
 // Uživatel píše jen 9 číslic, předvolba +420 je pevně před polem.
@@ -86,9 +81,23 @@ phoneInput.addEventListener('invalid', () => {
     phoneInput.setCustomValidity('Zadejte 9místné české telefonní číslo, např. 777 888 999');
 });
 
+// Souhlas se zpracováním osobních údajů – povinný
+const consentInput = document.getElementById('consent');
+const CONSENT_MSG = 'Pro odeslání je nutné souhlasit se zpracováním osobních údajů.';
+consentInput.addEventListener('invalid', () => consentInput.setCustomValidity(CONSENT_MSG));
+consentInput.addEventListener('change', () => consentInput.setCustomValidity(''));
+
 contactForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    
+
+    // Poistka pro prohlížeče, které nekontrolují atribut "required"
+    if (!consentInput.checked) {
+        consentInput.setCustomValidity(CONSENT_MSG);
+        consentInput.reportValidity();
+        showStatus('error', CONSENT_MSG);
+        return;
+    }
+
     // Show loading state
     submitBtn.disabled = true;
     btnText.textContent = 'Odesílání...';
@@ -126,7 +135,9 @@ contactForm.addEventListener('submit', async (e) => {
             contactForm.reset();
         } else {
             // Error from server
-            throw new Error(result.message || 'Chyba při odesílání');
+            const err = new Error(result.message || 'Chyba při odesílání');
+            err.serverMessage = result.message;
+            throw err;
         }
     } catch (error) {
         console.error('Form submission error:', error);
@@ -134,9 +145,8 @@ contactForm.addEventListener('submit', async (e) => {
         // Detailnější chybová hláška pro debugging
         let errorMsg = 'Omlouváme se, došlo k chybě při odesílání. ';
         
-        //if (API_URL.includes('svepomocizahubicku.cesanom')) {
-        if (API_URL.includes('test.cesanom')) {    
-            errorMsg += '⚠️ API není nakonfigurováno - kontaktujte správce webu.';
+        if (error.serverMessage) {
+            errorMsg = error.serverMessage;
         } else if (error.message && error.message.includes('Failed to fetch')) {
             errorMsg += 'Server je nedostupný. Zkuste to prosím znovu později.';
         } else {
