@@ -1,5 +1,77 @@
 // Cloudflare Worker pro ukládání kontaktních formulářů do D1 databáze
 // Nasadit přes: wrangler deploy nebo Cloudflare Dashboard
+//
+// E-mailová notifikace o novém záznamu (volitelná):
+//   - binding typu "Send email" s názvem NOTIFY (Settings → Bindings)
+//   - proměnná NOTIFY_TO = adresa, kam má notifikace přijít
+//     (musí být ověřená v Email Routing → Destination addresses)
+//   - proměnná NOTIFY_FROM (nepovinná), výchozí formular@svepomocizahubicku.cz
+// Když binding chybí, formulář funguje dál, jen bez notifikace.
+
+import { EmailMessage } from 'cloudflare:email';
+
+const PHASES = {
+  'planuji': 'Plánuji (zvažuji výstavbu)',
+  'projekt': 'Projekt (již máme projektovou dokumentaci)',
+  'hruba-stavba': 'Hrubá stavba (základy, konstrukce)',
+  'dokonceni': 'Dokončování (interiér, technologie)'
+};
+
+function b64utf8(str) {
+  const bytes = new TextEncoder().encode(str);
+  let bin = '';
+  for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+  return btoa(bin);
+}
+
+function cleanHeader(v) {
+  return String(v || '').replace(/[\r\n]+/g, ' ').trim();
+}
+
+async function sendNotificationEmail(data, id, env) {
+  if (!env.NOTIFY || !env.NOTIFY_TO) {
+    console.log('Notifikace vypnuta (chybí NOTIFY binding nebo NOTIFY_TO)');
+    return;
+  }
+  const from = env.NOTIFY_FROM || 'formular@svepomocizahubicku.cz';
+  const to = env.NOTIFY_TO;
+  const subject = `Nová poptávka z webu: ${cleanHeader(data.name)} (${cleanHeader(data.location)})`;
+  const body = [
+    'Přes kontaktní formulář na svepomocizahubicku.cz přišla nová poptávka.',
+    '',
+    `Jméno:    ${data.name}`,
+    `E-mail:   ${data.email}`,
+    `Telefon:  ${data.phone || '—'}`,
+    `Lokalita: ${data.location}`,
+    `Fáze:     ${PHASES[data.phase] || data.phase}`,
+    '',
+    'Zpráva:',
+    data.message || '—',
+    '',
+    `ID v databázi: ${id ?? '?'}`,
+    `Odesláno: ${new Date().toLocaleString('cs-CZ', { timeZone: 'Europe/Prague' })}`,
+    '',
+    'Na tento e-mail můžete rovnou odpovědět – odpověď půjde zájemci.'
+  ].join('\r\n');
+
+  const domain = from.split('@')[1];
+  const replyTo = cleanHeader(data.email);
+  const raw = [
+    `From: =?UTF-8?B?${b64utf8('Svépomocí za hubičku – formulář')}?= <${from}>`,
+    `To: <${to}>`,
+    /^[^\s@<>]+@[^\s@<>]+$/.test(replyTo) ? `Reply-To: <${replyTo}>` : null,
+    `Subject: =?UTF-8?B?${b64utf8(subject)}?=`,
+    `Date: ${new Date().toUTCString()}`,
+    `Message-ID: <${crypto.randomUUID()}@${domain}>`,
+    'MIME-Version: 1.0',
+    'Content-Type: text/plain; charset=UTF-8',
+    'Content-Transfer-Encoding: base64',
+    '',
+    b64utf8(body).replace(/.{76}/g, '$&\r\n')
+  ].filter(l => l !== null).join('\r\n');
+
+  await env.NOTIFY.send(new EmailMessage(from, to, raw));
+}
 
 export default {
   async fetch(request, env, ctx) {
@@ -119,8 +191,11 @@ export default {
         data.timestamp || new Date().toISOString()
       ).all();
 
-      // Odeslání notifikačního emailu (volitelné - pomocí Cloudflare Email Routing nebo externí služby)
-      // await sendNotificationEmail(data, env);
+      // Odeslání notifikačního e-mailu – chyba notifikace neovlivní uložení záznamu
+      const newId = results[0]?.id;
+      ctx.waitUntil(
+        sendNotificationEmail(data, newId, env).catch(err => console.error('Notifikace selhala:', err))
+      );
 
       return new Response(JSON.stringify({ 
         success: true, 

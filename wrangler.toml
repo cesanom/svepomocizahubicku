@@ -11,3 +11,11 @@ compatibility_date = "2024-01-01"
 binding = "DB"  # název v kódu (env.DB)
 database_name = "prod-d1-tutorial"
 database_id = "4f63c9fa-72cd-4311-9428-c584f354ae9c"  # ID z Cloudflare dashboardu po vytvoření DB
+
+# E-mailová notifikace o novém záznamu z formuláře
+# (NOTIFY_TO musí být ověřená adresa v Email Routing → Destination addresses)
+[[send_email]]
+name = "NOTIFY"
+
+# [vars]
+# NOTIFY_TO = "vas-gmail@gmail.com"
